@@ -22,7 +22,7 @@ module SignedParams
     # 
     # @param  params [Hash] the params
     # 
-    # 
+    # @return [Array<(String, String, String, Symbol>] A manifest of verification results
     def verify_params(params)
       params.map do |(key, value)|
         value, viewer, status = verify(value)
@@ -52,6 +52,15 @@ module SignedParams
       end
     end
 
+
+    # 
+    # Signs the provided value for the provided viewer
+    # 
+    # @param  value [String] the value to sign
+    # @param  viewer [String] the viewer
+    # @param  version=@default_version [Fixnum] the version of the signing protocol to use
+    # 
+    # @return [String] the signed value
     def sign(value, viewer, version=@default_version)
       protocol = VERSIONS[version]
       raise ArgumentError("Invalid version: #{version.inspect}")  if protocol.blank?
