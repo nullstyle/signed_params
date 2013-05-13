@@ -24,8 +24,9 @@ module SignedParams
     # 
     # @return [Array<(String, String, String, Symbol>] A manifest of verification results
     def verify_params(params)
-      params.map do |(key, value)|
-        value, viewer, status = verify(value)
+      params.map do |(key, signed_value)|
+        next unless signed_value.is_a?(String)
+        value, viewer, status = verify(signed_value)
         [key, value, viewer, status]
       end
     end
