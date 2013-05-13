@@ -1,3 +1,7 @@
+require 'base64'
+require 'msgpack'
+require 'openssl'
+
 module SignedParams
   module Versions
     class One < Base

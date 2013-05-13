@@ -1,7 +1,4 @@
 require "signed_params/version"
-require 'base64'
-require 'msgpack'
-require 'openssl'
 require 'active_support/core_ext/object/blank'
 
 module SignedParams
