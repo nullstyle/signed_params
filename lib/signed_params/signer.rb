@@ -9,8 +9,9 @@ module SignedParams
     # Creates a new signer object for the specified key
     # @param  secret [String] the key all params will be signed with/verified against
     # 
-    def initialize(secret)
+    def initialize(secret, default_version=1)
       @secret = secret
+      @default_version = default_version
     end
 
     # 
@@ -36,7 +37,7 @@ module SignedParams
     # 
     # @return [(String, String, Symbol)] The value, the viewer, and the status.  value and viewer will be nil if the param was could not be verified
     def verify(signed_value)
-      return failed_verify(:not_encrypted) unless signed_value.index(":")
+      return failed_verify(:not_signed) unless signed_value.index(":")
 
       value, version, encoded = signed_value.split(":", 3)
       protocol = VERSIONS[version.to_i]
@@ -51,7 +52,7 @@ module SignedParams
       end
     end
 
-    def sign(value, version, viewer)
+    def sign(value, viewer, version=@default_version)
       protocol = VERSIONS[version]
       raise ArgumentError("Invalid version: #{version.inspect}")  if protocol.blank?
       signature = protocol.sign(value, @secret, viewer)
