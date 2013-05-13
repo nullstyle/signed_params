@@ -1,5 +1,5 @@
 require 'base64'
-require 'msgpack'
+require 'active_support/json'
 require 'openssl'
 
 module SignedParams
@@ -15,8 +15,8 @@ module SignedParams
                             return :format_error
                           end
         unpacked       = begin
-                           MessagePack.unpack(unencoded)
-                         rescue MessagePack::MalformedFormatError
+                           ActiveSupport::JSON.decode(unencoded)
+                         rescue MultiJson::LoadError
                            return :format_error
                          end
 
@@ -44,7 +44,7 @@ module SignedParams
                       "sig" => sig,
                       "vwr" => viewer_id
                     }
-        unencoded = MessagePack.pack(unpacked)
+        unencoded = ActiveSupport::JSON.encode(unpacked)
         encoded   = Base64.urlsafe_encode64(unencoded)
         encoded
       end
