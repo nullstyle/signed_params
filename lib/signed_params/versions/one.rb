@@ -21,15 +21,16 @@ module SignedParams
                          end
 
         sig       = unpacked["sig"]
+        type      = unpacked["t"]
         viewer_id = unpacked["vwr"]
 
-        return :format_error if sig.blank? || viewer_id.blank?
+        return :format_error if sig.blank? || viewer_id.blank? || type.blank?
 
         ks                   = key_string(secret, viewer_id)
         calculated_signature = signature(ks, value)
         
         if calculated_signature == sig
-          viewer_id
+          [type, viewer_id]
         else
           :invalid_signature
         end
@@ -37,12 +38,13 @@ module SignedParams
 
 
       # (see SignedParams::Versions::Base#sign)
-      def sign(value, secret, viewer_id)
+      def sign(value, secret, type, viewer_id)
         ks        = key_string(secret, viewer_id)
         sig       = signature(ks, value)
         unpacked  = {
                       "sig" => sig,
-                      "vwr" => viewer_id
+                      "t"   => type,
+                      "vwr" => viewer_id,
                     }
         unencoded = ActiveSupport::JSON.encode(unpacked)
         encoded   = Base64.urlsafe_encode64(unencoded)

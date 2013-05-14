@@ -11,7 +11,7 @@ module SignedParams
       # @param  secret [String] the secret
       # @param  encoded [String] the encoded signature portion
       # 
-      # @return [type] [description]
+      # @return [(String,String), Symbol] Either an error message symbol, or a 2-element array, containing the value type and viewer embedded within the signature
       def verify(value, secret, encoded)
         raise NotImplementedError
       end
@@ -23,10 +23,11 @@ module SignedParams
       # 
       # @param  value [String] the value to sign
       # @param  secret [String] the secret to use
+      # @param  secret [String] the type of the value
       # @param  viewer [String] the viewer id who this signed value will be transmitted to
       # 
       # @return [String] the signature
-      def sign(value, secret, viewer)
+      def sign(value, secret, type, viewer)
         raise NotImplementedError
       end
 

@@ -26,8 +26,7 @@ module SignedParams
     def verify_params(params)
       params.map do |(key, signed_value)|
         next unless signed_value.is_a?(String)
-        value, viewer, status = verify(signed_value)
-        [key, value, viewer, status]
+        [key] + verify(signed_value)
       end
     end
 
@@ -49,7 +48,8 @@ module SignedParams
       if result.is_a?(Symbol)
         failed_verify(result)
       else
-        succeeded_verify(value, result)
+        type, viewer = *result
+        succeeded_verify(value, type, viewer)
       end
     end
 
@@ -58,24 +58,25 @@ module SignedParams
     # Signs the provided value for the provided viewer
     # 
     # @param  value [String] the value to sign
+    # @param  type [String] the semantic type string for the value
     # @param  viewer [String] the viewer
     # @param  version=@default_version [Fixnum] the version of the signing protocol to use
     # 
     # @return [String] the signed value
-    def sign(value, viewer, version=@default_version)
+    def sign(value, type, viewer, version=@default_version)
       protocol = VERSIONS[version]
       raise ArgumentError("Invalid version: #{version.inspect}")  if protocol.blank?
-      signature = protocol.sign(value, @secret, viewer)
+      signature = protocol.sign(value, @secret, type, viewer)
       "#{value}:#{version}:#{signature}"
     end
 
     private
     def failed_verify(error_code)
-      [nil, nil, error_code]
+      [nil, nil, nil, error_code]
     end
 
-    def succeeded_verify(value, viewer)
-      [value, viewer, :success]
+    def succeeded_verify(value, type, viewer)
+      [value, type, viewer, :success]
     end
   end
 end
