@@ -65,7 +65,7 @@ module SignedParams
     # @return [String] the signed value
     def sign(value, type, viewer, version=@default_version)
       protocol = VERSIONS[version]
-      raise ArgumentError("Invalid version: #{version.inspect}")  if protocol.blank?
+      raise ArgumentError, "Invalid version: #{version.inspect}"  if protocol.blank?
       signature = protocol.sign(value, @secret, type, viewer)
       "#{value}:#{version}:#{signature}"
     end
